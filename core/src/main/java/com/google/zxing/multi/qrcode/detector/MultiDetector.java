@@ -55,7 +55,8 @@ public final class MultiDetector extends Detector {
       throw NotFoundException.getNotFoundInstance();
     }
 
-    List<DetectorResult> result = new ArrayList<>();
+//    List<DetectorResult> result = new ArrayList<>();
+    List<DetectorResult> result = new ArrayList();
     for (FinderPatternInfo info : infos) {
       try {
         result.add(processFinderPatternInfo(info));

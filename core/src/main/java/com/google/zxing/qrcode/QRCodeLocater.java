@@ -41,7 +41,7 @@ import java.util.Map;
  * 
  * @author Sean Owen
  */
-public class QRCodeReader implements Reader {
+public class QRCodeLocater implements Reader {
 
     private static final ResultPoint[] NO_POINTS = new ResultPoint[0];
 
@@ -65,6 +65,21 @@ public class QRCodeReader implements Reader {
     @Override
     public Result decode(BinaryBitmap image) throws NotFoundException, ChecksumException, FormatException {
         return decode(image, null);
+    }
+
+    /**
+     * detect qrcode exist
+     * timedcy @ 20140508
+     * 
+     * @throws NotFoundException
+     * @throws FormatException
+     * @throws ChecksumException
+     */
+    public Result detect(BinaryBitmap image, Map<DecodeHintType, ?> hints) throws NotFoundException, FormatException, ChecksumException {
+        DetectorResult detectorResult = new Detector(image.getBlackMatrix()).detect(hints);
+        ResultPoint[] points = detectorResult.getPoints();
+        Result result = new Result("", null, points, BarcodeFormat.QR_CODE);
+        return result;
     }
 
     @Override
@@ -102,40 +117,6 @@ public class QRCodeReader implements Reader {
         return result;
     }
 
-    public final Result decodeTimedcy(BinaryBitmap image, Map<DecodeHintType, ?> hints) throws NotFoundException, ChecksumException, FormatException {
-        DecoderResult decoderResult;
-        ResultPoint[] points;
-        if (hints != null && hints.containsKey(DecodeHintType.PURE_BARCODE)) {
-            BitMatrix bits = extractPureBits(image.getBlackMatrix());
-            decoderResult = decoder.decode(bits, hints);
-            points = NO_POINTS;
-        } else {
-            DetectorResult detectorResult = new Detector(image.getBlackMatrix()).detectTimedcy(hints);
-            decoderResult = decoder.decode(detectorResult.getBits(), hints);
-            points = detectorResult.getPoints(); 
-        }
-
-        // If the code was mirrored: swap the bottom-left and the top-right points.
-        if (decoderResult.getOther() instanceof QRCodeDecoderMetaData) {
-            ((QRCodeDecoderMetaData) decoderResult.getOther()).applyMirroredCorrection(points);
-        }
-
-        Result result = new Result(decoderResult.getText(), decoderResult.getRawBytes(), points, BarcodeFormat.QR_CODE);
-        List<byte[]> byteSegments = decoderResult.getByteSegments();
-        if (byteSegments != null) {
-            result.putMetadata(ResultMetadataType.BYTE_SEGMENTS, byteSegments);
-        }
-        String ecLevel = decoderResult.getECLevel();
-        if (ecLevel != null) {
-            result.putMetadata(ResultMetadataType.ERROR_CORRECTION_LEVEL, ecLevel);
-        }
-        if (decoderResult.hasStructuredAppend()) {
-            result.putMetadata(ResultMetadataType.STRUCTURED_APPEND_SEQUENCE, decoderResult.getStructuredAppendSequenceNumber());
-            result.putMetadata(ResultMetadataType.STRUCTURED_APPEND_PARITY, decoderResult.getStructuredAppendParity());
-        }
-        return result;
-    }
-    
     @Override
     public void reset() {
         // do nothing

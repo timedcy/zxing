@@ -57,8 +57,10 @@ public final class RSS14Reader extends AbstractRSSReader {
   private final List<Pair> possibleRightPairs;
 
   public RSS14Reader() {
-    possibleLeftPairs = new ArrayList<>();
-    possibleRightPairs = new ArrayList<>();
+//      possibleLeftPairs = new ArrayList<>();
+      possibleLeftPairs = new ArrayList();
+//      possibleRightPairs = new ArrayList<>();
+      possibleRightPairs = new ArrayList();
   }
 
   @Override

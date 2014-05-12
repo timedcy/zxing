@@ -15,6 +15,9 @@ library implemented in Java, with ports to other languages.
 |            | RSS-14        |
 |            | RSS-Expanded  |
 
+## ChangeLog
+20140512:timedcy@gmail.com: improve qrcode detection algorithim, because some location modules of static image cannot be filtered correctly
+
 ## Components
 
 ### Active
